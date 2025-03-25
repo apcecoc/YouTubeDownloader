@@ -24,13 +24,13 @@ __version__ = (1, 0, 0)
 # scope: hikka_only
 # scope: hikka_min 1.2.10
 
-
 @loader.tds
 class YouTubeDownloaderMod(loader.Module):
     """Module for downloading YouTube videos"""
 
     strings = {
         "name": "YouTubeDownloader",
+        "_cls_doc": "Downloads YouTube videos in various qualities directly to the chat.",
         "no_url": "❌ Please provide a video URL! Example: .ytdl https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         "fetching_qualities": "⏳ Fetching available video resolutions...",
         "select_quality": "🎥 Select the quality to download:\n\n{qualities}",
@@ -67,8 +67,8 @@ class YouTubeDownloaderMod(loader.Module):
     def __init__(self):
         self.base_url = "https://api.paxsenix.biz.id"
         self.session = None
-        self.max_retries = 3
-        self.task_retries = 3
+        self.max_retries = 4
+        self.task_retries = 5
 
     async def client_ready(self, client, db):
         """Client initialization"""
