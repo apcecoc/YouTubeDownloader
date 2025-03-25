@@ -28,7 +28,6 @@ __version__ = (1, 0, 0)
 class YouTubeDownloaderMod(loader.Module):
     """Module for downloading YouTube videos via PaxSenix API"""
 
-    _cls_doc = "Downloads YouTube videos in various qualities directly to the chat."
 
     strings = {
         "name": "YouTubeDownloader",
@@ -45,6 +44,7 @@ class YouTubeDownloaderMod(loader.Module):
         "api_error": "❌ API error: {error}",
         "invalid_response": "❌ API returned an invalid response (possibly HTML). Please try again later.",
         "format_warning": "⚠️ If the video doesn't play, it may be due to an unsupported codec (e.g., VP9). Try a different quality or use an external player."
+        "_cls_doc" = "Downloads YouTube videos in various qualities directly to the chat."
     }
 
     strings_ru = {
