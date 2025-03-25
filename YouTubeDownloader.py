@@ -26,7 +26,7 @@ __version__ = (1, 0, 0)
 
 @loader.tds
 class YouTubeDownloaderMod(loader.Module):
-    """Module for downloading YouTube videos via PaxSenix API"""
+    """Module for downloading YouTube videos"""
 
 
     strings = {
@@ -68,8 +68,8 @@ class YouTubeDownloaderMod(loader.Module):
     def __init__(self):
         self.base_url = "https://api.paxsenix.biz.id"
         self.session = None
-        self.max_retries = 3  # Maximum retry attempts for "failed" status
-        self.task_retries = 3  # Maximum retry attempts for /task/{jobId} requests
+        self.max_retries = 3
+        self.task_retries = 3
 
     async def client_ready(self, client, db):
         """Client initialization"""
@@ -89,21 +89,19 @@ class YouTubeDownloaderMod(loader.Module):
     def get_video_resolution(self, video_content: io.BytesIO) -> str:
         """Get video resolution using ffprobe (if available)"""
         try:
-            # Save the video to a temporary file
             temp_filename = "temp_video.mp4"
             with open(temp_filename, "wb") as f:
                 f.write(video_content.getvalue())
 
-            # Use ffprobe to get metadata
             result = subprocess.run(
                 ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "json", temp_filename],
                 capture_output=True,
                 text=True
             )
-            metadata = eval(result.stdout)  # Parse ffprobe JSON output
+            metadata = eval(result.stdout)
             width = metadata["streams"][0]["width"]
             height = metadata["streams"][0]["height"]
-            os.remove(temp_filename)  # Delete the temporary file
+            os.remove(temp_filename)
             return f"{width}x{height}"
         except Exception as e:
             return "Unknown"
@@ -121,7 +119,7 @@ class YouTubeDownloaderMod(loader.Module):
             "1440": (2560, 1440),
             "2160": (3840, 2160)
         }
-        return dimensions.get(quality, (1280, 720))  # Default to 720p
+        return dimensions.get(quality, (1280, 720))
 
     async def download_video(self, url: str, title: str, call) -> io.BytesIO:
         """Download video by URL without progress display"""
@@ -137,7 +135,7 @@ class YouTubeDownloaderMod(loader.Module):
                     video_content.write(chunk)
 
             video_content.seek(0)
-            video_content.name = f"{title}.mp4"  # Add .mp4 extension
+            video_content.name = f"{title}.mp4"
             return video_content, downloaded
 
     async def get_available_qualities(self, youtube_url: str) -> list:
@@ -268,26 +266,21 @@ class YouTubeDownloaderMod(loader.Module):
             result = await self.check_task_status(task_data["task_url"], call)
             if result["success"]:
                 try:
-                    # Download the video and get its size
                     video_content, size = await self.download_video(result["url"], result["title"], call)
-                    # Check resolution (if ffprobe is available)
                     resolution = self.get_video_resolution(video_content)
-                    video_content.seek(0)  # Reset pointer after checking
+                    video_content.seek(0)
 
-                    # Estimate width and height based on quality
                     width, height = self.estimate_dimensions(quality)
 
-                    # Add video attributes
                     attributes = [
                         DocumentAttributeVideo(
-                            duration=0,  # Duration unknown without ffprobe
+                            duration=0,
                             w=width,
                             h=height,
                             supports_streaming=True
                         )
                     ]
 
-                    # Send the video to the chat
                     await self._client.send_file(
                         call.form["chat"],
                         video_content,
