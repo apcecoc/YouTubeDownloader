@@ -28,7 +28,6 @@ __version__ = (1, 0, 0)
 class YouTubeDownloaderMod(loader.Module):
     """Module for downloading YouTube videos"""
 
-
     strings = {
         "name": "YouTubeDownloader",
         "no_url": "❌ Please provide a video URL! Example: .ytdl https://www.youtube.com/watch?v=dQw4w9WgXcQ",
